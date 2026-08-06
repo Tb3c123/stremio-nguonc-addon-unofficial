@@ -41,22 +41,7 @@ Mặc định server sẽ chạy tại cổng `7007`:
    ```text
    http://localhost:7007/manifest.json
    ```
-   *(Hoặc URL sau khi deploy lên Render/Vercel)*
 4. Nhấn **Install** để hoàn tất.
-
----
-
-## ☁️ Deploy lên Cloud (Miễn phí)
-
-### Deploy lên Render
-1. Đẩy code lên GitHub repository của bạn.
-2. Đăng nhập [Render.com](https://render.com/), tạo mới **Web Service**.
-3. Chọn repo GitHub chứa addon.
-4. Thiết lập:
-   - **Environment**: Node
-   - **Build Command**: `npm install`
-   - **Start Command**: `node server.js`
-5. Nhấn **Create Web Service**. Sau khi deploy xong, bạn sẽ có URL dạng `https://stremio-nguonc.onrender.com/manifest.json`.
 
 ---
 
