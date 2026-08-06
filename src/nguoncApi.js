@@ -29,21 +29,38 @@ function getVnIpHeaders() {
 /**
  * Fetch JSON from NguonC API
  */
-async function fetchJson(url) {
-  try {
-    const headers = {
-      ...DEFAULT_HEADERS,
-      ...getVnIpHeaders()
-    };
-    const res = await fetch(url, { headers });
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status} when fetching ${url}`);
+async function fetchJson(url, retries = 3) {
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const headers = {
+        'Host': 'phim.nguonc.com',
+        ...DEFAULT_HEADERS,
+        ...getVnIpHeaders()
+      };
+
+      const res = await fetch(url, { headers });
+
+      if (res.ok) {
+        return await res.json();
+      }
+
+      lastError = new Error(`HTTP ${res.status} when fetching ${url}`);
+      if (res.status === 403 || res.status === 429 || res.status >= 500) {
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        continue;
+      } else {
+        break;
+      }
+    } catch (err) {
+      lastError = err;
+      await new Promise((resolve) => setTimeout(resolve, 300));
     }
-    return await res.json();
-  } catch (err) {
-    console.error(`[NguonC API Error] ${url}:`, err.message);
-    return null;
   }
+
+  console.error(`[NguonC API Error] ${url}:`, lastError?.message || 'Failed after retries');
+  return null;
 }
 
 /**
