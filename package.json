@@ -1,0 +1,25 @@
+{
+  "name": "stremio-addon-nguonc",
+  "version": "1.0.0",
+  "description": "Stremio Addon cho NguonC API (phim.nguonc.com)",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "stremio",
+    "stremio-addon",
+    "nguonc",
+    "vietnam",
+    "movies"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "stremio-addon-sdk": "^1.6.0"
+  }
+}
