@@ -15,12 +15,27 @@ const DEFAULT_HEADERS = {
   'Sec-Fetch-Site': 'same-origin'
 };
 
+function getVnIpHeaders() {
+  const vnIpPrefixes = ['14.225', '113.161', '27.72', '116.108', '42.112'];
+  const prefix = vnIpPrefixes[Math.floor(Math.random() * vnIpPrefixes.length)];
+  const ip = `${prefix}.${Math.floor(Math.random() * 250 + 1)}.${Math.floor(Math.random() * 250 + 1)}`;
+  return {
+    'X-Forwarded-For': ip,
+    'X-Real-IP': ip,
+    'Client-IP': ip
+  };
+}
+
 /**
  * Fetch JSON from NguonC API
  */
 async function fetchJson(url) {
   try {
-    const res = await fetch(url, { headers: DEFAULT_HEADERS });
+    const headers = {
+      ...DEFAULT_HEADERS,
+      ...getVnIpHeaders()
+    };
+    const res = await fetch(url, { headers });
     if (!res.ok) {
       throw new Error(`HTTP ${res.status} when fetching ${url}`);
     }
@@ -99,7 +114,8 @@ export async function resolveHlsStream(embedUrl) {
     const res = await fetch(embedUrl, {
       headers: {
         'User-Agent': DEFAULT_HEADERS['User-Agent'],
-        'Referer': 'https://phim.nguonc.com/'
+        'Referer': 'https://phim.nguonc.com/',
+        ...getVnIpHeaders()
       }
     });
 
