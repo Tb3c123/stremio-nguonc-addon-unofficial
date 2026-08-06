@@ -11,6 +11,16 @@ const PORT = process.env.PORT || 7007;
 
 app.use(cors());
 
+// Automatically detect public URL from request headers (Render / Cloud reverse proxies)
+app.use((req, res, next) => {
+  const proto = req.headers['x-forwarded-proto'] || req.protocol || 'http';
+  const host = req.get('host');
+  if (host && !host.includes('localhost')) {
+    process.env.DETECTED_PUBLIC_URL = `${proto}://${host}`;
+  }
+  next();
+});
+
 // Mount HLS Proxy Router
 app.use('/proxy', proxyRouter);
 

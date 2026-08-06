@@ -242,7 +242,7 @@ builder.defineStreamHandler(async ({ type, id }) => {
   const episodesData = movie.episodes || [];
   const streams = [];
 
-  const host = process.env.PUBLIC_URL || `http://localhost:${process.env.PORT || 7007}`;
+  const host = process.env.PUBLIC_URL || process.env.RENDER_EXTERNAL_URL || process.env.DETECTED_PUBLIC_URL || `http://localhost:${process.env.PORT || 7007}`;
 
   for (const server of episodesData) {
     const items = server.items || [];
