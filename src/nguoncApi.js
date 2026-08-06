@@ -29,33 +29,41 @@ function getVnIpHeaders() {
 /**
  * Fetch JSON from NguonC API
  */
-async function fetchJson(url, retries = 3) {
+async function fetchJson(url, retries = 2) {
   let lastError = null;
 
-  for (let attempt = 1; attempt <= retries; attempt++) {
-    try {
-      const headers = {
-        'Host': 'phim.nguonc.com',
-        ...DEFAULT_HEADERS,
-        ...getVnIpHeaders()
-      };
+  // Build target list (HTTPS first, then HTTP fallback)
+  const targets = [url];
+  if (url.startsWith('https://phim.nguonc.com')) {
+    targets.push(url.replace('https://phim.nguonc.com', 'http://phim.nguonc.com'));
+  }
 
-      const res = await fetch(url, { headers });
+  for (const targetUrl of targets) {
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        const headers = {
+          'Host': 'phim.nguonc.com',
+          ...DEFAULT_HEADERS,
+          ...getVnIpHeaders()
+        };
 
-      if (res.ok) {
-        return await res.json();
+        const res = await fetch(targetUrl, { headers });
+
+        if (res.ok) {
+          return await res.json();
+        }
+
+        lastError = new Error(`HTTP ${res.status} when fetching ${targetUrl}`);
+        if (res.status === 403 || res.status === 429 || res.status >= 500) {
+          await new Promise((resolve) => setTimeout(resolve, 200));
+          continue;
+        } else {
+          break;
+        }
+      } catch (err) {
+        lastError = err;
+        await new Promise((resolve) => setTimeout(resolve, 200));
       }
-
-      lastError = new Error(`HTTP ${res.status} when fetching ${url}`);
-      if (res.status === 403 || res.status === 429 || res.status >= 500) {
-        await new Promise((resolve) => setTimeout(resolve, 300));
-        continue;
-      } else {
-        break;
-      }
-    } catch (err) {
-      lastError = err;
-      await new Promise((resolve) => setTimeout(resolve, 300));
     }
   }
 
