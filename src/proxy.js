@@ -5,6 +5,14 @@ const proxyRouter = express.Router();
 
 const DEFAULT_UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
+// CORS Preflight handler
+proxyRouter.options('*', (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', '*');
+  return res.sendStatus(204);
+});
+
 /**
  * Proxy HLS Playlist (.m3u8)
  */
